@@ -1,9 +1,9 @@
-package com.starbux.coffee.Controller.product;
+package com.starbux.coffee.controller.topping;
 
 import lombok.Getter;
 
 @Getter
-public class CreateProductRequest {
+public class CreateToppingRequest {
 
     private String name;
     private Double amount;

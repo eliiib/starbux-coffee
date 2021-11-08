@@ -1,7 +1,7 @@
-package com.starbux.coffee.Controller.product;
+package com.starbux.coffee.controller.product;
 
 
-import com.starbux.coffee.Service.ProductService;
+import com.starbux.coffee.service.ProductService;
 import com.starbux.coffee.domain.Product;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;

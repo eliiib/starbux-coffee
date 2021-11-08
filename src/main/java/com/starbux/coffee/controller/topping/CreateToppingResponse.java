@@ -1,4 +1,4 @@
-package com.starbux.coffee.Controller.topping;
+package com.starbux.coffee.controller.topping;
 
 import lombok.Builder;
 import lombok.Getter;

@@ -1,8 +1,8 @@
-package com.starbux.coffee.Service.impl;
+package com.starbux.coffee.service.impl;
 
 
-import com.starbux.coffee.Repository.ProductRepository;
-import com.starbux.coffee.Service.ProductService;
+import com.starbux.coffee.repository.ProductRepository;
+import com.starbux.coffee.service.ProductService;
 import com.starbux.coffee.domain.Product;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -42,5 +42,10 @@ public class ProductServiceImpl implements ProductService {
                 product ->
                         product.setIsDeleted(true)
         );
+    }
+
+    @Override
+    public Product findProductById(Long id) {
+        return productRepository.findById(id).orElseThrow();
     }
 }

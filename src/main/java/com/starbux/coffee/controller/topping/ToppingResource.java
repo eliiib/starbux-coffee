@@ -1,26 +1,28 @@
-package com.starbux.coffee.Controller.topping;
+package com.starbux.coffee.controller.topping;
 
 
-import com.starbux.coffee.Service.ToppingService;
+import com.starbux.coffee.service.ToppingService;
 import com.starbux.coffee.domain.Topping;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
+@RequestMapping("/toppings")
 public class ToppingResource {
 
     private final ToppingService toppingService;
 
 
     @PostMapping
-    public CreateToppingResponse createTopping(@RequestBody CreateToppingRequest request) {
+    public ResponseEntity<CreateToppingResponse> createTopping(@RequestBody CreateToppingRequest request) {
         Topping topping = toppingService.createTopping(request.getName(), request.getAmount());
 
-        return CreateToppingResponse.builder()
+        return ResponseEntity.ok(CreateToppingResponse.builder()
                 .name(topping.getName())
                 .amount(topping.getAmount())
-                .build();
+                .build());
     }
 
     @PutMapping("/{id}")
@@ -34,8 +36,9 @@ public class ToppingResource {
     }
 
     @DeleteMapping("/{id}")
-    public void createProduct(@PathVariable("id") String id) {
+    public ResponseEntity<?> deleteProduct(@PathVariable("id") String id) {
         toppingService.deleteTopping(Long.parseLong(id));
+        return ResponseEntity.ok().build();
     }
 
 

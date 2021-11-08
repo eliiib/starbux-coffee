@@ -1,8 +1,10 @@
-package com.starbux.coffee.Service.impl;
+package com.starbux.coffee.service.impl;
 
 
-import com.starbux.coffee.Repository.ToppingRepository;
-import com.starbux.coffee.Service.ToppingService;
+import com.starbux.coffee.domain.Product;
+import com.starbux.coffee.exception.ToppingNotFoundException;
+import com.starbux.coffee.repository.ToppingRepository;
+import com.starbux.coffee.service.ToppingService;
 import com.starbux.coffee.domain.Topping;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -33,7 +35,7 @@ public class ToppingServiceImpl implements ToppingService {
                     product.setAmount(amount);
                     return product;
                 }
-        ).orElseThrow(RuntimeException::new);
+        ).orElseThrow(ToppingNotFoundException::new);
     }
 
     @Override
@@ -42,5 +44,10 @@ public class ToppingServiceImpl implements ToppingService {
                 product ->
                         product.setIsDeleted(true)
         );
+    }
+
+    @Override
+    public Topping findToppingById(Long id) {
+        return toppingRepository.findById(id).orElseThrow(ToppingNotFoundException::new);
     }
 }

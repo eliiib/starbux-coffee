@@ -1,5 +1,6 @@
-package com.starbux.coffee.Service;
+package com.starbux.coffee.service;
 
+import com.starbux.coffee.domain.Product;
 import com.starbux.coffee.domain.Topping;
 
 public interface ToppingService {
@@ -9,4 +10,6 @@ public interface ToppingService {
     Topping updateTopping(Long id, String name, Double amount);
 
     void deleteTopping(Long id);
+
+    Topping findToppingById(Long id);
 }
