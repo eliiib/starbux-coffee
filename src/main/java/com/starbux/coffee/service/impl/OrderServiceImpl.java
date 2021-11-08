@@ -117,7 +117,7 @@ public class OrderServiceImpl implements OrderService {
         }
 
         List<OrderItem> orderItems = orderItemRepository.findAllByOrder(order);
-        if(orderItems.size() >= minCountDiscount) {
+        if(orderItems.size() >= minCount) {
             minCountDiscount = orderItems.stream().mapToDouble(OrderItem::getAmount).min().orElse(0.0);
         }
         return Math.max(minValueDiscount, minCountDiscount);
