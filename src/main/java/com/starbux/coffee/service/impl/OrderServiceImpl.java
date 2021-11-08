@@ -12,6 +12,7 @@ import com.starbux.coffee.service.ProductService;
 import com.starbux.coffee.service.ToppingService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,6 +26,15 @@ import java.util.stream.Collectors;
 @Slf4j
 @Transactional
 public class OrderServiceImpl implements OrderService {
+
+    @Value("{order.discount.percent}")
+    private double discountPercentage;
+
+    @Value("{order.discount.min-value}")
+    private double minValue;
+
+    @Value("{order.discount.min-count}")
+    private double minCount;
 
     private final OrderRepository orderRepository;
     private final OrderItemRepository orderItemRepository;
@@ -99,7 +109,18 @@ public class OrderServiceImpl implements OrderService {
     }
 
     private Double calculateDiscount(Order order) {
-        return 0.0;
+        double minValueDiscount = 0;
+        double minCountDiscount = 0;
+        double orderAmount = calculateTotalAmount(order);
+        if(orderAmount > minValue) {
+            minValueDiscount = orderAmount * discountPercentage / 100;
+        }
+
+        List<OrderItem> orderItems = orderItemRepository.findAllByOrder(order);
+        if(orderItems.size() >= minCountDiscount) {
+            minCountDiscount = orderItems.stream().mapToDouble(OrderItem::getAmount).min().orElse(0.0);
+        }
+        return Math.max(minValueDiscount, minCountDiscount);
     }
 
 }
