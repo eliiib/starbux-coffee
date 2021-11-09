@@ -27,13 +27,13 @@ import java.util.stream.Collectors;
 @Transactional
 public class OrderServiceImpl implements OrderService {
 
-    @Value("{order.discount.percent}")
+    @Value("${order.discount.percent}")
     private double discountPercentage;
 
-    @Value("{order.discount.min-value}")
+    @Value("${order.discount.min-value}")
     private double minValue;
 
-    @Value("{order.discount.min-count}")
+    @Value("${order.discount.min-count}")
     private double minCount;
 
     private final OrderRepository orderRepository;

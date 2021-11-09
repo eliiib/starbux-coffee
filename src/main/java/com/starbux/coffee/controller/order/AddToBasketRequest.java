@@ -1,14 +1,14 @@
 package com.starbux.coffee.controller.order;
 
 import lombok.Getter;
+import lombok.Setter;
 
 import java.util.List;
 
 @Getter
+@Setter
 public class AddToBasketRequest {
 
-    //TODO: move customerId to header
-    private String customerId;
     private String productId;
     private List<String> toppingIds;
 }

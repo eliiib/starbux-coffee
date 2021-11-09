@@ -4,6 +4,7 @@ package com.starbux.coffee.controller.product;
 import com.starbux.coffee.service.ProductService;
 import com.starbux.coffee.domain.Product;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -14,7 +15,7 @@ public class ProductResource {
     private final ProductService productService;
 
 
-    @PostMapping
+    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public CreateProductResponse createProduct(@RequestBody CreateProductRequest request) {
         Product product = productService.createProduct(request.getName(), request.getAmount());
 
@@ -24,7 +25,7 @@ public class ProductResource {
                 .build();
     }
 
-    @PutMapping("/{id}")
+    @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public CreateProductResponse updateProduct(@PathVariable("id") String id, @RequestBody CreateProductRequest request) {
         Product product = productService.updateProduct(Long.parseLong(id), request.getName(), request.getAmount());
 

@@ -17,8 +17,9 @@ public class OrderResource {
 
 
     @PostMapping
-    public ResponseEntity<OrderResponseDTO> addToBasket(@RequestBody AddToBasketRequest request) {
-        Order order = orderService.addToBasket(request.getCustomerId(), Long.parseLong(request.getProductId()),
+    public ResponseEntity<OrderResponseDTO> addToBasket(@RequestHeader("customerId") final String customerId,
+                                                        @RequestBody AddToBasketRequest request) {
+        Order order = orderService.addToBasket(customerId, Long.parseLong(request.getProductId()),
                 request.getToppingIds().stream().map(Long::parseLong).collect(Collectors.toList()));
 
         return ResponseEntity.ok(OrderResponseDTO.builder()
