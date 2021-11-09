@@ -69,6 +69,11 @@ public class OrderServiceImpl implements OrderService {
         return order;
     }
 
+    @Override
+    public Double getCustomerTotalOrdersAmount(String customerId) {
+        return orderRepository.sumTotalAmountByCustomerIdAndStatusType(customerId, Order.StatusType.COMPLETED);
+    }
+
     private Order addNewItem(Order order, Long productId, List<Long> toppings) {
         createNewOrderItem(order, productId, toppings);
         order.setTotalAmount(calculateTotalAmount(order));
@@ -122,5 +127,4 @@ public class OrderServiceImpl implements OrderService {
         }
         return Math.max(minValueDiscount, minCountDiscount);
     }
-
 }
