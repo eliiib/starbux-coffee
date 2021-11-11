@@ -69,7 +69,6 @@ public class OrderServiceImpl implements OrderService {
         order.setTotalAmount(calculateTotalAmount(order));
         order.setDiscount(calculateDiscount(order));
         order.setPaymentAmount(order.getTotalAmount() - order.getDiscount());
-        order.setOrderItems(new HashSet<>(orderItemRepository.findAllByOrder(order)));
         return order;
     }
 
@@ -78,10 +77,10 @@ public class OrderServiceImpl implements OrderService {
         return orderRepository.sumTotalAmountByCustomerIdAndStatusType(customerId, Order.StatusType.COMPLETED);
     }
 
-    private Order addNewItem(Order order, Long productId, List<Long> toppings) {
+    public Order addNewItem(Order order, Long productId, List<Long> toppings) {
         createNewOrderItem(order, productId, toppings);
         order.setTotalAmount(calculateTotalAmount(order));
-        order.setOrderItems(new HashSet<>(orderItemRepository.findAllByOrder(order)));
+        order.setDiscount(calculateDiscount(order));
         return order;
     }
 

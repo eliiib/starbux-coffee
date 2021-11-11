@@ -1,6 +1,7 @@
 package com.starbux.coffee.controller.report;
 
 import com.starbux.coffee.service.OrderService;
+import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,6 +18,7 @@ public class ReportResource {
 
 
     @GetMapping("/customers/total-amounts")
+    @ApiOperation(value = "Get customer total orders amount", response = CustomerTotalOrdersAmountResponse.class)
     public ResponseEntity<CustomerTotalOrdersAmountResponse> getCustomerTotalOrdersAmount(@RequestParam("customerId") String customerId) {
         return ResponseEntity.ok(CustomerTotalOrdersAmountResponse.builder()
                 .totalAmount(orderService.getCustomerTotalOrdersAmount(customerId))

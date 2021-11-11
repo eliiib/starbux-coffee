@@ -7,7 +7,10 @@ import com.starbux.coffee.domain.Topping;
 import com.starbux.coffee.repository.OrderItemRepository;
 import com.starbux.coffee.repository.OrderRepository;
 import com.starbux.coffee.service.impl.OrderServiceImpl;
+import org.aspectj.lang.annotation.Before;
 import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -16,9 +19,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @ExtendWith(SpringExtension.class)
 @Import(OrderServiceImpl.class)
@@ -49,18 +54,36 @@ public class OrderServiceImplTest {
 
     }
 
+    @BeforeEach
+    public void init() {
+        ReflectionTestUtils.setField(orderService, "discountPercentage", "25");
+        ReflectionTestUtils.setField(orderService, "minValue", "12");
+        ReflectionTestUtils.setField(orderService, "minCount", "3");
+    }
+
     @Test
     @DisplayName("Calculate order item amount, amount should be correct")
     public void creatNewOrderItem_validInput_addedNewOrderItem() {
+        //totalAmount = 7D
         Order order = createSampleOrder();
+        //amount = 5D
         Product product = createSampleProduct();
+        //totalAmount = 9D
         List<Topping> toppings = toppings();
+        List<OrderItem> orderItems = new ArrayList<>();
+        orderItems.addAll(new ArrayList<>(order.getOrderItems()));
+        orderItems.add(OrderItem.builder().id(15L).amount(14D).toppings(new HashSet<>(toppings)).order(order).product(product).build());
+
         Mockito.doReturn(product).when(productService).findProductById(product.getId());
         Mockito.doReturn(toppings.get(0)).when(toppingService).findToppingById(toppings.get(0).getId());
         Mockito.doReturn(toppings.get(1)).when(toppingService).findToppingById(toppings.get(1).getId());
         Mockito.doReturn(toppings.get(2)).when(toppingService).findToppingById(toppings.get(2).getId());
-        double orderItemAmount = orderService.calculateOrderItemAmount(createSampleProduct(), toppings());
-        Assertions.assertThat(orderItemAmount).isEqualTo(14D);
+        Mockito.doReturn(orderItems).when(orderItemRepository).findAllByOrder(order);
+
+
+        orderService.addNewItem(order, product.getId(), toppings.stream().map(Topping::getId).collect(Collectors.toList()));
+        Assertions.assertThat(order.getTotalAmount()).isEqualTo(21D);
+        Assertions.assertThat(order.getDiscount()).isEqualTo(5.25D);
     }
 
 

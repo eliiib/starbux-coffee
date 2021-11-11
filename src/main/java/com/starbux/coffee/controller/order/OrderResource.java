@@ -2,6 +2,7 @@ package com.starbux.coffee.controller.order;
 
 import com.starbux.coffee.domain.Order;
 import com.starbux.coffee.service.OrderService;
+import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +20,7 @@ public class OrderResource {
 
 
     @PostMapping(path = "/basket", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Add an item to basket", response = OrderResponseDTO.class)
     public ResponseEntity<OrderResponseDTO> addToBasket(@RequestHeader("customerId") final String customerId,
                                                         @Valid @RequestBody AddToBasketRequest request) {
         Order order = orderService.addToBasket(customerId, Long.parseLong(request.getProductId()),
@@ -33,6 +35,7 @@ public class OrderResource {
 
 
     @PutMapping(path = "checkout", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Checkout the basket", response = OrderResponseDTO.class)
     public ResponseEntity<OrderResponseDTO> checkout(@RequestHeader("customerId") String customerId) {
         Order order = orderService.checkout(customerId);
 

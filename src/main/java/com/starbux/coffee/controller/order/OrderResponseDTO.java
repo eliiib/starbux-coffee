@@ -1,12 +1,10 @@
 package com.starbux.coffee.controller.order;
 
-import com.starbux.coffee.domain.Product;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import java.util.List;
 
 @Getter
 @Builder
@@ -14,14 +12,12 @@ import java.util.List;
 @AllArgsConstructor
 public class OrderResponseDTO {
 
-    @Getter
-    @Builder
-    public static class OrderItem {
-        private Product product;
-    }
-
+    @ApiModelProperty(notes = "Order total amount")
     private Double totalAmount;
+
+    @ApiModelProperty(notes = "Order discount")
     private Double discount;
+
+    @ApiModelProperty(notes = "Order payment amount")
     private Double paymentAmount;
-    private List<OrderItem> orderItems;
 }
