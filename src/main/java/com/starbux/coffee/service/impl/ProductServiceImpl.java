@@ -1,9 +1,10 @@
 package com.starbux.coffee.service.impl;
 
 
+import com.starbux.coffee.domain.Product;
+import com.starbux.coffee.exception.ProductNotFoundException;
 import com.starbux.coffee.repository.ProductRepository;
 import com.starbux.coffee.service.ProductService;
-import com.starbux.coffee.domain.Product;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -27,25 +28,21 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public Product updateProduct(Long id, String name, Double amount) {
-        return productRepository.findById(id).map(
-                product -> {
-                    product.setName(name);
-                    product.setAmount(amount);
-                    return product;
-                }
-        ).orElseThrow(RuntimeException::new);
+        Product product = findProductById(id);
+        product.setName(name);
+        product.setAmount(amount);
+        return product;
     }
 
     @Override
     public void deleteProduct(Long id) {
-        productRepository.findById(id).ifPresent(
-                product ->
-                        product.setIsDeleted(true)
-        );
+        Product product = findProductById(id);
+        product.setIsDeleted(true);
+        productRepository.save(product);
     }
 
     @Override
     public Product findProductById(Long id) {
-        return productRepository.findById(id).orElseThrow();
+        return productRepository.findById(id).orElseThrow(() -> new ProductNotFoundException("There is no product with this id"));
     }
 }

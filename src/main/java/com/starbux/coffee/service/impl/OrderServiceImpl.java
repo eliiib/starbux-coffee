@@ -4,7 +4,7 @@ import com.starbux.coffee.domain.Order;
 import com.starbux.coffee.domain.OrderItem;
 import com.starbux.coffee.domain.Product;
 import com.starbux.coffee.domain.Topping;
-import com.starbux.coffee.exception.OrderNotFoundException;
+import com.starbux.coffee.exception.NoInProgressOrderException;
 import com.starbux.coffee.repository.OrderItemRepository;
 import com.starbux.coffee.repository.OrderRepository;
 import com.starbux.coffee.service.OrderService;
@@ -28,13 +28,13 @@ import java.util.stream.Collectors;
 public class OrderServiceImpl implements OrderService {
 
     @Value("${order.discount.percent}")
-    private double discountPercentage;
+    private String discountPercentage;
 
     @Value("${order.discount.min-value}")
-    private double minValue;
+    private String minValue;
 
     @Value("${order.discount.min-count}")
-    private double minCount;
+    private String minCount;
 
     private final OrderRepository orderRepository;
     private final OrderItemRepository orderItemRepository;
@@ -44,9 +44,15 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public Order addToBasket(String customerId, Long productId, List<Long> toppings) {
+        log.info("Add product: {} to order of customer: {}", productId, customerId);
         return orderRepository.findByCustomerIdAndStatusTypeEquals(customerId, Order.StatusType.IN_PROGRESS).map(
-                order -> addNewItem(order, productId, toppings)
+                order -> {
+                    log.info("Update existing order: {} with product: {} for customer: {}", order.getId(), productId, customerId);
+                    addNewItem(order, productId, toppings);
+                    return order;
+                }
         ).orElseGet(() -> {
+            log.info("Create new order for customer: {} with product: {}", customerId, productId);
             Order order = createNewOrder(customerId);
             addNewItem(order, productId, toppings);
             return order;
@@ -54,12 +60,10 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public Order checkout(Long id) {
-        Order order = orderRepository.findById(id).orElseThrow(OrderNotFoundException::new);
-
-        if(order.getStatusType().equals(Order.StatusType.COMPLETED)) {
-            log.info("Order has already been completed!");
-        }
+    public Order checkout(String customerId) {
+        log.info("Checkout basket for customer: {}", customerId);
+        Order order = orderRepository.findByCustomerIdAndStatusTypeEquals(customerId, Order.StatusType.IN_PROGRESS)
+                .orElseThrow(() -> new NoInProgressOrderException("There is not any in progress order to checkout!"));
 
         order.setStatusType(Order.StatusType.COMPLETED);
         order.setTotalAmount(calculateTotalAmount(order));
@@ -81,7 +85,7 @@ public class OrderServiceImpl implements OrderService {
         return order;
     }
 
-    private OrderItem createNewOrderItem(Order order, Long productId, List<Long> toppingIds) {
+    public OrderItem createNewOrderItem(Order order, Long productId, List<Long> toppingIds) {
         Product product = productService.findProductById(productId);
         List<Topping> toppings = toppingIds.stream().map(
                 toppingService::findToppingById
@@ -93,7 +97,7 @@ public class OrderServiceImpl implements OrderService {
                         .toppings(new HashSet<>(toppings))
                         .amount(calculateOrderItemAmount(product, toppings))
                         .order(order)
-                .build()
+                        .build()
         );
     }
 
@@ -105,7 +109,7 @@ public class OrderServiceImpl implements OrderService {
                 .build());
     }
 
-    private Double calculateOrderItemAmount(Product product, List<Topping> toppings) {
+    public Double calculateOrderItemAmount(Product product, List<Topping> toppings) {
         return product.getAmount() + toppings.stream().mapToDouble(Topping::getAmount).sum();
     }
 
@@ -117,12 +121,12 @@ public class OrderServiceImpl implements OrderService {
         double minValueDiscount = 0;
         double minCountDiscount = 0;
         double orderAmount = calculateTotalAmount(order);
-        if(orderAmount > minValue) {
-            minValueDiscount = orderAmount * discountPercentage / 100;
+        if(orderAmount > Double.parseDouble(minValue)) {
+            minValueDiscount = orderAmount * Double.parseDouble(discountPercentage) / 100;
         }
 
         List<OrderItem> orderItems = orderItemRepository.findAllByOrder(order);
-        if(orderItems.size() >= minCount) {
+        if(orderItems.size() >= Double.parseDouble(minCount)) {
             minCountDiscount = orderItems.stream().mapToDouble(OrderItem::getAmount).min().orElse(0.0);
         }
         return Math.max(minValueDiscount, minCountDiscount);

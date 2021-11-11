@@ -3,9 +3,11 @@ package com.starbux.coffee.controller.order;
 import com.starbux.coffee.domain.Order;
 import com.starbux.coffee.service.OrderService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.stream.Collectors;
 
 @RestController
@@ -16,9 +18,9 @@ public class OrderResource {
     private final OrderService orderService;
 
 
-    @PostMapping
+    @PostMapping(path = "/basket", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<OrderResponseDTO> addToBasket(@RequestHeader("customerId") final String customerId,
-                                                        @RequestBody AddToBasketRequest request) {
+                                                        @Valid @RequestBody AddToBasketRequest request) {
         Order order = orderService.addToBasket(customerId, Long.parseLong(request.getProductId()),
                 request.getToppingIds().stream().map(Long::parseLong).collect(Collectors.toList()));
 
@@ -30,9 +32,9 @@ public class OrderResource {
     }
 
 
-    @PutMapping("/{id}")
-    public ResponseEntity<OrderResponseDTO> checkout(@PathVariable("id") String id) {
-        Order order = orderService.checkout(Long.parseLong(id));
+    @PutMapping(path = "checkout", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<OrderResponseDTO> checkout(@RequestHeader("customerId") String customerId) {
+        Order order = orderService.checkout(customerId);
 
         return ResponseEntity.ok(OrderResponseDTO.builder()
                 .totalAmount(order.getTotalAmount())

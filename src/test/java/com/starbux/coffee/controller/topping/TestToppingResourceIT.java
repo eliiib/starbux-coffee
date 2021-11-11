@@ -19,7 +19,7 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class ToppingResourceIT {
+public class TestToppingResourceIT {
 
     @Autowired
     private TestRestTemplate restTemplate;

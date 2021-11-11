@@ -7,6 +7,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/products")
@@ -16,7 +18,7 @@ public class ProductResource {
 
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public CreateProductResponse createProduct(@RequestBody CreateProductRequest request) {
+    public CreateProductResponse createProduct(@Valid @RequestBody CreateProductRequest request) {
         Product product = productService.createProduct(request.getName(), request.getAmount());
 
         return CreateProductResponse.builder()

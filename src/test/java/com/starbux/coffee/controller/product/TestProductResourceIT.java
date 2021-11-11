@@ -20,7 +20,7 @@ import com.starbux.coffee.repository.ProductRepository;
 import static org.assertj.core.api.Assertions.*;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-public class ProductResourceIT {
+public class TestProductResourceIT {
 
 	@Autowired
 	private TestRestTemplate restTemplate;

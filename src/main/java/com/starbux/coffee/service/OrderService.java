@@ -8,7 +8,7 @@ public interface OrderService {
 
     Order addToBasket(String customerId, Long productId, List<Long> toppings);
 
-    Order checkout(Long id);
+    Order checkout(String customerId);
 
     Double getCustomerTotalOrdersAmount(String customerId);
 }
