@@ -74,7 +74,6 @@ public class OrderServiceImpl implements OrderService {
         order.setTotalAmount(calculateTotalAmount(order));
         order.setDiscount(calculateDiscount(order));
         order.setPaymentAmount(calculatePaymentAmount(order));
-        order.setOrderItems(new HashSet<>(orderItemRepository.findAllByOrder(order)));
         return order;
     }
 
@@ -95,11 +94,13 @@ public class OrderServiceImpl implements OrderService {
     }
 
     private Order createNewOrder(String customerId) {
-        return orderRepository.save(Order.builder()
+        Order order = Order.builder()
                 .customerId(customerId)
                 .statusType(Order.StatusType.IN_PROGRESS)
                 .createDate(LocalDateTime.now())
-                .build());
+                .build();
+        orderRepository.save(order);
+        return order;
     }
 
     private Double calculateOrderItemAmount(Product product, List<Topping> toppings) {

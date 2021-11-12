@@ -31,6 +31,33 @@ public class ProductServiceImplTest {
     @MockBean
     private ProductRepository productRepository;
 
+    @Test
+    @DisplayName("when create product is called and the inputs are valid, product should be created")
+    public void createProduct_validInput_createdProduct() {
+        Product product = productService.createProduct("Latte", 5D);
+
+        assertThat(product.getName()).isEqualTo("Latte");
+        assertThat(product.getAmount()).isEqualTo(5D);
+        Mockito.verify(productRepository, times(1)).save(product);
+    }
+
+    @Test
+    @DisplayName("when update product is called and the inputs are valid, product should be updated")
+    public void updateProduct_validInput_updatedProduct() {
+        Product product = this.createSampleProduct();
+        Mockito.doReturn(Optional.of(product)).when(productRepository).findById(12L);
+        productService.updateProduct(12L, "Mocha", 6.0);
+
+        assertThat(product.getName()).isEqualTo("Mocha");
+        assertThat(product.getAmount()).isEqualTo(6D);
+    }
+
+    @Test
+    @DisplayName("Test updating not existing product, then throw product not found exception")
+    public void updateProduct_productNoExist_ThrowException() {
+        Mockito.doReturn(Optional.empty()).when(productRepository).findById(13L);
+        assertThrows(ProductNotFoundException.class, () -> productService.updateProduct(13L, "Mocha", 6D));
+    }
 
     @Test
     @DisplayName("when delete product is called and the id is valid, the delete flag should set true")

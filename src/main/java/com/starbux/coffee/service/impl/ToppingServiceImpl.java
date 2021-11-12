@@ -22,11 +22,13 @@ public class ToppingServiceImpl implements ToppingService {
     @Override
     public Topping createTopping(String name, Double amount) {
         log.info("create topping with name: {} and amount: {}", name, amount);
-        return toppingRepository.save(Topping.builder()
+        Topping topping = Topping.builder()
                 .name(name)
                 .amount(amount)
                 .createDate(LocalDateTime.now())
-                .build());
+                .build();
+        toppingRepository.save(topping);
+        return topping;
     }
 
     @Override

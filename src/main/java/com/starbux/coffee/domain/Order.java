@@ -5,7 +5,6 @@ import lombok.*;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.util.Set;
 
 @Entity
 @Getter
@@ -33,9 +32,6 @@ public class Order {
 
     @Enumerated(EnumType.STRING)
     private StatusType statusType;
-
-    @Transient
-    private Set<OrderItem> orderItems;
 
     @Transient
     private double paymentAmount;

@@ -31,6 +31,35 @@ public class ToppingServiceImplTest {
     private ToppingRepository toppingRepository;
 
     @Test
+    @DisplayName("when create topping is called and the inputs are valid, topping should be created and saved")
+    public void createTopping_validInput_createdTopping() {
+        Topping topping = toppingService.createTopping("Lemon", 2D);
+
+        assertThat(topping.getName()).isEqualTo("Lemon");
+        assertThat(topping.getAmount()).isEqualTo(2D);
+        Mockito.verify(toppingRepository, times(1)).save(topping);
+    }
+
+    @Test
+    @DisplayName("when update topping is called and the inputs are valid, topping should be updated")
+    public void updateTopping_validInput_updatedTopping() {
+        Topping topping = this.createSampleTopping();
+        Mockito.doReturn(Optional.of(topping)).when(toppingRepository).findById(10L);
+        toppingService.updateTopping(10L, "Hazelnut syrup", 3D);
+
+        assertThat(topping.getName()).isEqualTo("Hazelnut syrup");
+        assertThat(topping.getAmount()).isEqualTo(3D);
+    }
+
+    @Test
+    @DisplayName("when updating not existing topping, then throw topping not found exception")
+    public void updateTopping_toppingNoExist_ThrowException() {
+        Mockito.doReturn(Optional.empty()).when(toppingRepository).findById(10L);
+        assertThrows(ToppingNotFoundException.class, () -> toppingService.updateTopping(10L, "Lemon", 2D));
+    }
+
+
+    @Test
     @DisplayName("when delete topping is called and the id is valid, the delete flag should set true")
     public void deleteTopping_validId_setDeleteFlag() {
         Topping topping = this.createSampleTopping();

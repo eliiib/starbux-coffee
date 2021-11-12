@@ -20,11 +20,13 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public Product createProduct(String name, Double amount) {
-        return productRepository.save(Product.builder()
+        Product product  = Product.builder()
                 .name(name)
                 .amount(amount)
                 .createDate(LocalDateTime.now())
-                .build());
+                .build();
+        productRepository.save(product);
+        return product;
     }
 
     @Override
