@@ -1,6 +1,8 @@
 package com.starbux.coffee.exception;
 
-public class NoInProgressOrderException extends RuntimeException {
+import com.starbux.coffee.config.exception.BadRequestException;
+
+public class NoInProgressOrderException extends BadRequestException {
 
     public NoInProgressOrderException(String msg) {
         super(msg);

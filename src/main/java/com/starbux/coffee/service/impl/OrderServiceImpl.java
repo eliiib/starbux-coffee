@@ -93,7 +93,7 @@ public class OrderServiceImpl implements OrderService {
 
         return orderItemRepository.save(
                 OrderItem.builder()
-                        .product(productService.findProductByName(productName))
+                        .product(product)
                         .toppings(new HashSet<>(toppings))
                         .amount(calculateOrderItemAmount(product, toppings))
                         .order(order)

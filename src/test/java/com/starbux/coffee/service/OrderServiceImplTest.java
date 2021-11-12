@@ -74,10 +74,9 @@ public class OrderServiceImplTest {
 
         Mockito.doReturn(product).when(productService).findProductByName("Latte");
         Mockito.doReturn(toppings.get(0)).when(toppingService).findToppingByName("Milk");
-        Mockito.doReturn(toppings.get(1)).when(toppingService).findToppingByName("Chocolate");
+        Mockito.doReturn(toppings.get(1)).when(toppingService).findToppingByName("Chocolate Sauce");
         Mockito.doReturn(toppings.get(2)).when(toppingService).findToppingByName("Lemon");
         Mockito.doReturn(orderItems).when(orderItemRepository).findAllByOrder(order);
-
 
         orderService.addNewItem(order, product.getName(), toppings.stream().map(Topping::getName).collect(Collectors.toList()));
         Assertions.assertThat(order.getTotalAmount()).isEqualTo(21D);

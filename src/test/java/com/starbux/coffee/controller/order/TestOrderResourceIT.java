@@ -117,8 +117,7 @@ public class TestOrderResourceIT {
 	@Test
 	@DisplayName("When order is checked out, in progress status should be completed")
 	public void checkoutOrder_validInputs_orderCompleted() {
-		Order order = orderRepository.save(createSampleOrder());
-		orderItemRepository.saveAll(order.getOrderItems());
+		initDB();
 
 		HttpHeaders headers = new HttpHeaders();
 		headers.set("customerId", "123456");
@@ -127,9 +126,9 @@ public class TestOrderResourceIT {
 		ResponseEntity<OrderResponseDTO> response = restTemplate.exchange(createUrl("/orders/checkout"), HttpMethod.POST,
 				httpEntity, OrderResponseDTO.class);
 		assertThat(response.getStatusCode().value()).isEqualTo(200);
-		assertThat(response.getBody().getTotalAmount()).isEqualTo(14D);
-		assertThat(response.getBody().getDiscount()).isEqualTo(3.5);
-		assertThat(response.getBody().getPaymentAmount()).isEqualTo(10.5);
+		assertThat(response.getBody().getTotalAmount()).isEqualTo(21D);
+		assertThat(response.getBody().getDiscount()).isEqualTo(7D);
+		assertThat(response.getBody().getPaymentAmount()).isEqualTo(14D);
 
 		List<Order> savedOrder = orderRepository.findAll();
 		assertThat(savedOrder).isNotEmpty();
@@ -143,7 +142,7 @@ public class TestOrderResourceIT {
 	}
 
 	private Order createSampleOrder() {
-		Order order = Order.builder()
+		return Order.builder()
 				.customerId("123456")
 				.totalAmount(21D)
 				.discount(0D)
@@ -151,13 +150,6 @@ public class TestOrderResourceIT {
 				.createDate(LocalDateTime.now())
 				.updateDate(LocalDateTime.now())
 				.build();
-		Set<OrderItem> orderItems = new HashSet<>();
-		orderItems.add(createSampleOrderItem(order));
-		orderItems.add(createSampleOrderItem(order));
-		orderItems.add(createSampleOrderItem(order));
-
-		order.setOrderItems(orderItems);
-		return order;
 	}
 
 	private Product createSampleProduct() {
@@ -180,9 +172,9 @@ public class TestOrderResourceIT {
 
 	private OrderItem createSampleOrderItem(Order order){
 		Set<Topping> toppings = new HashSet<>();
-		toppings.add(createSampleTopping());
+		toppings.add(toppingRepository.findByName("Milk").orElse(null));
 		return OrderItem.builder()
-				.product(createSampleProduct())
+				.product(productRepository.findByName("Latte").orElse(null))
 				.toppings(toppings)
 				.amount(7D)
 				.order(order)
@@ -219,5 +211,15 @@ public class TestOrderResourceIT {
 		toppings.add(chocolate);
 		toppings.add(lemon);
 		return toppings;
+	}
+
+	private void initDB() {
+		Order order = orderRepository.save(createSampleOrder());
+
+		Set<OrderItem> orderItems = new HashSet<>();
+		orderItems.add(createSampleOrderItem(order));
+		orderItems.add(createSampleOrderItem(order));
+		orderItems.add(createSampleOrderItem(order));
+		orderItemRepository.saveAll(orderItems);
 	}
 }

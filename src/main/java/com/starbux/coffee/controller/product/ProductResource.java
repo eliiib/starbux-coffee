@@ -42,7 +42,7 @@ public class ProductResource {
     }
 
     @DeleteMapping("/{id}")
-    @ApiOperation(value = "Delete a product"    )
+    @ApiOperation(value = "Delete a product")
     public void deleteProduct(@PathVariable("id") String id) {
         productService.deleteProduct(Long.parseLong(id));
     }
