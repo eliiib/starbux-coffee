@@ -6,7 +6,7 @@ import java.util.List;
 
 public interface OrderService {
 
-    Order addToBasket(String customerId, Long productId, List<Long> toppings);
+    Order addToBasket(String customerId, String productName, List<String> toppingNames);
 
     Order checkout(String customerId);
 

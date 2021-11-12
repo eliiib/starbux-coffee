@@ -9,7 +9,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
@@ -23,8 +22,7 @@ public class OrderResource {
     @ApiOperation(value = "Add an item to basket", response = OrderResponseDTO.class)
     public ResponseEntity<OrderResponseDTO> addToBasket(@RequestHeader("customerId") final String customerId,
                                                         @Valid @RequestBody AddToBasketRequest request) {
-        Order order = orderService.addToBasket(customerId, Long.parseLong(request.getProductId()),
-                request.getToppingIds().stream().map(Long::parseLong).collect(Collectors.toList()));
+        Order order = orderService.addToBasket(customerId, request.getProductName(), request.getToppingNames());
 
         return ResponseEntity.ok(OrderResponseDTO.builder()
                 .totalAmount(order.getTotalAmount())
@@ -34,7 +32,7 @@ public class OrderResource {
     }
 
 
-    @PutMapping(path = "checkout", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(path = "checkout", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Checkout the basket", response = OrderResponseDTO.class)
     public ResponseEntity<OrderResponseDTO> checkout(@RequestHeader("customerId") String customerId) {
         Order order = orderService.checkout(customerId);

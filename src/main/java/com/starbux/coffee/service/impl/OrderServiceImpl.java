@@ -43,18 +43,18 @@ public class OrderServiceImpl implements OrderService {
 
 
     @Override
-    public Order addToBasket(String customerId, Long productId, List<Long> toppings) {
-        log.info("Add product: {} to order of customer: {}", productId, customerId);
+    public Order addToBasket(String customerId, String productName, List<String> toppingNames) {
+        log.info("Add product: {} to order of customer: {}", productName, customerId);
         return orderRepository.findByCustomerIdAndStatusTypeEquals(customerId, Order.StatusType.IN_PROGRESS).map(
                 order -> {
-                    log.info("Update existing order: {} with product: {} for customer: {}", order.getId(), productId, customerId);
-                    addNewItem(order, productId, toppings);
+                    log.info("Update existing order: {} with product: {} for customer: {}", order.getId(), productName, customerId);
+                    addNewItem(order, productName, toppingNames);
                     return order;
                 }
         ).orElseGet(() -> {
-            log.info("Create new order for customer: {} with product: {}", customerId, productId);
+            log.info("Create new order for customer: {} with product: {}", customerId, productName);
             Order order = createNewOrder(customerId);
-            addNewItem(order, productId, toppings);
+            addNewItem(order, productName, toppingNames);
             return order;
         });
     }
@@ -68,7 +68,7 @@ public class OrderServiceImpl implements OrderService {
         order.setStatusType(Order.StatusType.COMPLETED);
         order.setTotalAmount(calculateTotalAmount(order));
         order.setDiscount(calculateDiscount(order));
-        order.setPaymentAmount(order.getTotalAmount() - order.getDiscount());
+        order.setPaymentAmount(calculatePaymentAmount(order));
         return order;
     }
 
@@ -77,22 +77,23 @@ public class OrderServiceImpl implements OrderService {
         return orderRepository.sumTotalAmountByCustomerIdAndStatusType(customerId, Order.StatusType.COMPLETED);
     }
 
-    public Order addNewItem(Order order, Long productId, List<Long> toppings) {
-        createNewOrderItem(order, productId, toppings);
+    public Order addNewItem(Order order, String productName, List<String> toppingName) {
+        createNewOrderItem(order, productName, toppingName);
         order.setTotalAmount(calculateTotalAmount(order));
         order.setDiscount(calculateDiscount(order));
+        order.setPaymentAmount(calculatePaymentAmount(order));
         return order;
     }
 
-    public OrderItem createNewOrderItem(Order order, Long productId, List<Long> toppingIds) {
-        Product product = productService.findProductById(productId);
-        List<Topping> toppings = toppingIds.stream().map(
-                toppingService::findToppingById
+    public OrderItem createNewOrderItem(Order order, String productName, List<String> toppingNames) {
+        Product product = productService.findProductByName(productName);
+        List<Topping> toppings = toppingNames.stream().map(
+                toppingService::findToppingByName
         ).collect(Collectors.toList());
 
         return orderItemRepository.save(
                 OrderItem.builder()
-                        .product(productService.findProductById(productId))
+                        .product(productService.findProductByName(productName))
                         .toppings(new HashSet<>(toppings))
                         .amount(calculateOrderItemAmount(product, toppings))
                         .order(order)
@@ -129,5 +130,9 @@ public class OrderServiceImpl implements OrderService {
             minCountDiscount = orderItems.stream().mapToDouble(OrderItem::getAmount).min().orElse(0.0);
         }
         return Math.max(minValueDiscount, minCountDiscount);
+    }
+
+    private Double calculatePaymentAmount(Order order) {
+        return order.getTotalAmount() - order.getDiscount();
     }
 }

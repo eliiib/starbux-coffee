@@ -1,6 +1,7 @@
 package com.starbux.coffee.controller.order;
 
 import io.swagger.annotations.ApiModelProperty;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -10,13 +11,14 @@ import java.util.List;
 
 @Getter
 @Setter
+@Builder
 public class AddToBasketRequest {
 
     @NotBlank
     @ApiModelProperty(notes = "The product id of a new order item")
-    private String productId;
+    private String productName;
 
     @NotEmpty
     @ApiModelProperty(notes = "List of toppings of a new order item")
-    private List<String> toppingIds;
+    private List<String> toppingNames;
 }

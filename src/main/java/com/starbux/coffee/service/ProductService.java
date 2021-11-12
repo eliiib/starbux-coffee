@@ -9,5 +9,5 @@ public interface ProductService {
 
     void deleteProduct(Long id);
 
-    Product findProductById(Long id);
+    Product findProductByName(String name);
 }

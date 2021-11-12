@@ -1,18 +1,19 @@
 package com.starbux.coffee.service.impl;
 
 
-import com.starbux.coffee.domain.Product;
+import com.starbux.coffee.domain.Topping;
 import com.starbux.coffee.exception.ToppingNotFoundException;
 import com.starbux.coffee.repository.ToppingRepository;
 import com.starbux.coffee.service.ToppingService;
-import com.starbux.coffee.domain.Topping;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class ToppingServiceImpl implements ToppingService {
 
     private final ToppingRepository toppingRepository;
@@ -20,6 +21,7 @@ public class ToppingServiceImpl implements ToppingService {
 
     @Override
     public Topping createTopping(String name, Double amount) {
+        log.info("create topping with name: {} and amount: {}", name, amount);
         return toppingRepository.save(Topping.builder()
                 .name(name)
                 .amount(amount)
@@ -29,17 +31,19 @@ public class ToppingServiceImpl implements ToppingService {
 
     @Override
     public Topping updateTopping(Long id, String name, Double amount) {
+        log.info("Update topping with id: {} to name: {} and amount: {}", id, name, amount);
         return toppingRepository.findById(id).map(
                 product -> {
                     product.setName(name);
                     product.setAmount(amount);
                     return product;
                 }
-        ).orElseThrow(ToppingNotFoundException::new);
+        ).orElseThrow(() -> new ToppingNotFoundException("Topping with id: " + id + " not found!"));
     }
 
     @Override
     public void deleteTopping(Long id) {
+        log.info("Delete topping with id: {}", id);
         toppingRepository.findById(id).ifPresent(
                 product ->
                         product.setIsDeleted(true)
@@ -47,7 +51,8 @@ public class ToppingServiceImpl implements ToppingService {
     }
 
     @Override
-    public Topping findToppingById(Long id) {
-        return toppingRepository.findById(id).orElseThrow(ToppingNotFoundException::new);
+    public Topping findToppingByName(String name) {
+        log.info("Try to find topping with name: {}", name);
+        return toppingRepository.findByName(name).orElseThrow(() -> new ToppingNotFoundException("Topping with name: " + name + " not found!"));
     }
 }

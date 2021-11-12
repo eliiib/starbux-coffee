@@ -7,9 +7,7 @@ import com.starbux.coffee.domain.Topping;
 import com.starbux.coffee.repository.OrderItemRepository;
 import com.starbux.coffee.repository.OrderRepository;
 import com.starbux.coffee.service.impl.OrderServiceImpl;
-import org.aspectj.lang.annotation.Before;
 import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -74,14 +72,14 @@ public class OrderServiceImplTest {
         orderItems.addAll(new ArrayList<>(order.getOrderItems()));
         orderItems.add(OrderItem.builder().id(15L).amount(14D).toppings(new HashSet<>(toppings)).order(order).product(product).build());
 
-        Mockito.doReturn(product).when(productService).findProductById(product.getId());
-        Mockito.doReturn(toppings.get(0)).when(toppingService).findToppingById(toppings.get(0).getId());
-        Mockito.doReturn(toppings.get(1)).when(toppingService).findToppingById(toppings.get(1).getId());
-        Mockito.doReturn(toppings.get(2)).when(toppingService).findToppingById(toppings.get(2).getId());
+        Mockito.doReturn(product).when(productService).findProductByName("Latte");
+        Mockito.doReturn(toppings.get(0)).when(toppingService).findToppingByName("Milk");
+        Mockito.doReturn(toppings.get(1)).when(toppingService).findToppingByName("Chocolate");
+        Mockito.doReturn(toppings.get(2)).when(toppingService).findToppingByName("Lemon");
         Mockito.doReturn(orderItems).when(orderItemRepository).findAllByOrder(order);
 
 
-        orderService.addNewItem(order, product.getId(), toppings.stream().map(Topping::getId).collect(Collectors.toList()));
+        orderService.addNewItem(order, product.getName(), toppings.stream().map(Topping::getName).collect(Collectors.toList()));
         Assertions.assertThat(order.getTotalAmount()).isEqualTo(21D);
         Assertions.assertThat(order.getDiscount()).isEqualTo(5.25D);
     }

@@ -28,7 +28,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public Product updateProduct(Long id, String name, Double amount) {
-        Product product = findProductById(id);
+        Product product = productRepository.findById(id).orElseThrow(() -> new ProductNotFoundException("There is no product with this id"));
         product.setName(name);
         product.setAmount(amount);
         return product;
@@ -36,13 +36,13 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public void deleteProduct(Long id) {
-        Product product = findProductById(id);
+        Product product = productRepository.findById(id).orElseThrow(() -> new ProductNotFoundException("There is no product with this id"));
         product.setIsDeleted(true);
         productRepository.save(product);
     }
 
     @Override
-    public Product findProductById(Long id) {
-        return productRepository.findById(id).orElseThrow(() -> new ProductNotFoundException("There is no product with this id"));
+    public Product findProductByName(String name) {
+        return productRepository.findByName(name).orElseThrow(() -> new ProductNotFoundException("There is no product with this name"));
     }
 }
