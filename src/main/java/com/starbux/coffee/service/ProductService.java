@@ -2,6 +2,8 @@ package com.starbux.coffee.service;
 
 import com.starbux.coffee.domain.Product;
 
+import java.util.List;
+
 public interface ProductService {
     Product createProduct(String name, Double amount);
 
@@ -10,4 +12,6 @@ public interface ProductService {
     void deleteProduct(Long id);
 
     Product findProductByName(String name);
+
+    List<Product> getProducts();
 }

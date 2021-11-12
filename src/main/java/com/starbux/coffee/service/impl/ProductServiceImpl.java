@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -44,5 +45,9 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public Product findProductByName(String name) {
         return productRepository.findByName(name).orElseThrow(() -> new ProductNotFoundException("There is no product with this name"));
+    }
+
+    public List<Product> getProducts() {
+        return productRepository.findAllByIsDeletedEquals(false);
     }
 }
