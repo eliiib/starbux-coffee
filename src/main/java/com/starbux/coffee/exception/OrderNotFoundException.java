@@ -1,4 +1,6 @@
 package com.starbux.coffee.exception;
 
-public class OrderNotFoundException extends RuntimeException{
+import com.starbux.coffee.config.exception.BadRequestException;
+
+public class OrderNotFoundException extends BadRequestException {
 }

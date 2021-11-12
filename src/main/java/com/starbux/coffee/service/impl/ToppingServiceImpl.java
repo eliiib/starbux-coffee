@@ -33,10 +33,10 @@ public class ToppingServiceImpl implements ToppingService {
     public Topping updateTopping(Long id, String name, Double amount) {
         log.info("Update topping with id: {} to name: {} and amount: {}", id, name, amount);
         return toppingRepository.findById(id).map(
-                product -> {
-                    product.setName(name);
-                    product.setAmount(amount);
-                    return product;
+                topping -> {
+                    topping.setName(name);
+                    topping.setAmount(amount);
+                    return topping;
                 }
         ).orElseThrow(() -> new ToppingNotFoundException("Topping with id: " + id + " not found!"));
     }
@@ -44,10 +44,9 @@ public class ToppingServiceImpl implements ToppingService {
     @Override
     public void deleteTopping(Long id) {
         log.info("Delete topping with id: {}", id);
-        toppingRepository.findById(id).ifPresent(
-                product ->
-                        product.setIsDeleted(true)
-        );
+        Topping topping = toppingRepository.findById(id).orElseThrow(() -> new ToppingNotFoundException("There is no topping with this id"));
+        topping.setIsDeleted(true);
+        toppingRepository.save(topping);
     }
 
     @Override

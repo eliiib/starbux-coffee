@@ -138,7 +138,7 @@ public class TestOrderResourceIT {
 
 	private String createUrl(String address) {
 		return new StringBuilder("http://localhost:")
-				.append(serverPort).append("/").append(address).toString();
+				.append(serverPort).append("/starbux").append(address).toString();
 	}
 
 	private Order createSampleOrder() {

@@ -52,9 +52,32 @@ public class TestToppingResourceIT {
         assertThat(savedTopping).isNotEmpty();
         assertThat(savedTopping.get(0).getName()).isEqualTo("Milk");
     }
+
+    @Test
+    @DisplayName("when the name is empty in the request, the response should be 400")
+    public void createTopping_emptyName_shouldReturnBadRequest() {
+        CreateToppingRequest request = new CreateToppingRequest();
+        request.setAmount(5D);
+        HttpEntity<CreateToppingRequest> httpEntity = new HttpEntity<>(request);
+        ResponseEntity<CreateToppingResponse> response = restTemplate.exchange(createUrl("/toppings"), HttpMethod.POST,
+                httpEntity, CreateToppingResponse.class);
+        assertThat(response.getStatusCode().value()).isEqualTo(400);
+    }
+
+    @Test
+    @DisplayName("when the amount is empty in the request, the response should be 400")
+    public void createTopping_nullAmount_shouldReturnBadRequest() {
+        CreateToppingRequest request = new CreateToppingRequest();
+        request.setName("Latte");
+        HttpEntity<CreateToppingRequest> httpEntity = new HttpEntity<>(request);
+        ResponseEntity<CreateToppingResponse> response = restTemplate.exchange(createUrl("/toppings"), HttpMethod.POST,
+                httpEntity, CreateToppingResponse.class);
+        assertThat(response.getStatusCode().value()).isEqualTo(400);
+    }
+
     private String createUrl(String address) {
         return new StringBuilder("http://localhost:")
-                .append(serverPort).append("/").append(address).toString();
+                .append(serverPort).append("/starbux").append(address).toString();
     }
 
 }

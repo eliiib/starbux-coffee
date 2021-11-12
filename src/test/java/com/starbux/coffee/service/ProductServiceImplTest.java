@@ -5,7 +5,6 @@ import com.starbux.coffee.domain.Product;
 import com.starbux.coffee.exception.ProductNotFoundException;
 import com.starbux.coffee.repository.ProductRepository;
 import com.starbux.coffee.service.impl.ProductServiceImpl;
-import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -18,7 +17,8 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.times;
 
 @ExtendWith(SpringExtension.class)
@@ -41,7 +41,6 @@ public class ProductServiceImplTest {
 
         assertThat(product.getIsDeleted()).isTrue();
         Mockito.verify(productRepository, times(1)).save(product);
-
     }
 
 
@@ -49,7 +48,6 @@ public class ProductServiceImplTest {
     @DisplayName("Test deleting not existing product, then throw product not found exception")
     public void testDeleteProduct_productNoExist_ThrowException() {
         Mockito.doReturn(Optional.empty()).when(productRepository).findById(13L);
-//        productService.deleteProduct(13L);
         assertThrows(ProductNotFoundException.class, () -> productService.deleteProduct(13L));
     }
 
