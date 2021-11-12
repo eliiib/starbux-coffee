@@ -12,13 +12,13 @@ import com.starbux.coffee.service.ProductService;
 import com.starbux.coffee.service.ToppingService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.tomcat.util.threads.TaskQueue;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.HashSet;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
@@ -27,15 +27,7 @@ import java.util.stream.Collectors;
 @Transactional
 public class OrderServiceImpl implements OrderService {
 
-    @Value("${order.discount.percent}")
-    private String discountPercentage;
-
-    @Value("${order.discount.min-value}")
-    private String minValue;
-
-    @Value("${order.discount.min-count}")
-    private String minCount;
-
+    private final Environment environment;
     private final OrderRepository orderRepository;
     private final OrderItemRepository orderItemRepository;
     private final ProductService productService;
@@ -77,15 +69,16 @@ public class OrderServiceImpl implements OrderService {
         return orderRepository.sumTotalAmountByCustomerIdAndStatusType(customerId, Order.StatusType.COMPLETED);
     }
 
-    public Order addNewItem(Order order, String productName, List<String> toppingName) {
+    private Order addNewItem(Order order, String productName, List<String> toppingName) {
         createNewOrderItem(order, productName, toppingName);
         order.setTotalAmount(calculateTotalAmount(order));
         order.setDiscount(calculateDiscount(order));
         order.setPaymentAmount(calculatePaymentAmount(order));
+        order.setOrderItems(new HashSet<>(orderItemRepository.findAllByOrder(order)));
         return order;
     }
 
-    public OrderItem createNewOrderItem(Order order, String productName, List<String> toppingNames) {
+    private OrderItem createNewOrderItem(Order order, String productName, List<String> toppingNames) {
         Product product = productService.findProductByName(productName);
         List<Topping> toppings = toppingNames.stream().map(
                 toppingService::findToppingByName
@@ -109,7 +102,7 @@ public class OrderServiceImpl implements OrderService {
                 .build());
     }
 
-    public Double calculateOrderItemAmount(Product product, List<Topping> toppings) {
+    private Double calculateOrderItemAmount(Product product, List<Topping> toppings) {
         return product.getAmount() + toppings.stream().mapToDouble(Topping::getAmount).sum();
     }
 
@@ -121,12 +114,17 @@ public class OrderServiceImpl implements OrderService {
         double minValueDiscount = 0;
         double minCountDiscount = 0;
         double orderAmount = calculateTotalAmount(order);
-        if(orderAmount > Double.parseDouble(minValue)) {
-            minValueDiscount = orderAmount * Double.parseDouble(discountPercentage) / 100;
+
+        Double minValue = environment.getRequiredProperty("order.discount.min-value", Double.class);
+        Integer minCount = environment.getRequiredProperty("order.discount.min-count", Integer.class);
+        Integer discountPercentage = environment.getRequiredProperty("order.discount.percent", Integer.class);
+
+        if(orderAmount > minValue) {
+            minValueDiscount = orderAmount * discountPercentage / 100;
         }
 
         List<OrderItem> orderItems = orderItemRepository.findAllByOrder(order);
-        if(orderItems.size() >= Double.parseDouble(minCount)) {
+        if(orderItems.size() >= minCount) {
             minCountDiscount = orderItems.stream().mapToDouble(OrderItem::getAmount).min().orElse(0.0);
         }
         return Math.max(minValueDiscount, minCountDiscount);
