@@ -32,7 +32,7 @@ public class OrderResource {
     }
 
 
-    @PostMapping(path = "checkout", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(path = "/checkout", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Checkout the basket", response = OrderResponseDTO.class)
     public ResponseEntity<OrderResponseDTO> checkout(@RequestHeader("customerId") String customerId) {
         Order order = orderService.checkout(customerId);

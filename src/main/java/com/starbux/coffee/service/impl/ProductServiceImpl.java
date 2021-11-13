@@ -24,6 +24,7 @@ public class ProductServiceImpl implements ProductService {
                 .name(name)
                 .amount(amount)
                 .createDate(LocalDateTime.now())
+                .isDeleted(false)
                 .build();
         productRepository.save(product);
         return product;

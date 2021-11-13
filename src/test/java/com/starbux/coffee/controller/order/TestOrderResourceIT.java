@@ -84,7 +84,7 @@ public class TestOrderResourceIT {
 
 	@Test
 	@DisplayName("When the product name is empty in the request, the response should be 400")
-	public void createOrder_invalidInputs_shouldreturnBadRequest() {
+	public void createOrder_invalidInputs_shouldReturnBadRequest() {
 		AddToBasketRequest request = AddToBasketRequest.builder()
 				.toppingNames(Arrays.asList("Milk", "Chocolate Sauce", "Lemon"))
 				.build();

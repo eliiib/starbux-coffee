@@ -50,7 +50,7 @@ public class ExceptionAdviceHandler {
         String[] errorMessageItems = errorMessage.split("#");
         return ErrorContent.builder()
                 .message(errorMessageItems[0])
-                .code(Integer.parseInt(errorMessageItems[1]))
+                .code(errorMessageItems[1])
                 .fields(Collections.emptyList())
                 .build();
     }

@@ -13,5 +13,4 @@ public class CreateToppingResponse {
 
     private String name;
     private Double amount;
-    private String createDate;
 }

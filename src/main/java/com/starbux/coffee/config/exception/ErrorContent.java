@@ -10,7 +10,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ErrorContent {
-    private int code;
+    private String code;
     private String message;
     private List<String> fields;
 }

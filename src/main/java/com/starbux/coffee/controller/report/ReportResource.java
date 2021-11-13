@@ -4,6 +4,7 @@ import com.starbux.coffee.service.OrderService;
 import com.starbux.coffee.service.ReportService;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -36,8 +37,8 @@ public class ReportResource {
         return ResponseEntity.ok(MostUsedToppingDTO.builder()
                 .mostUsedToppings(reportService.mostUsedToppingReport().stream().map(
                         mostUsedToppingModel -> MostUsedToppingDTO.MostUsedTopping.builder()
-                                .productName(mostUsedToppingModel.getProduct().getName())
-                                .toppingName(mostUsedToppingModel.getTopping().getName())
+                                .productName(mostUsedToppingModel.getProduct() != null ? mostUsedToppingModel.getProduct().getName() : StringUtils.EMPTY)
+                                .toppingName(mostUsedToppingModel.getTopping() != null ? mostUsedToppingModel.getTopping().getName() : StringUtils.EMPTY)
                                 .build()
                 ).collect(Collectors.toList()))
                 .build());
