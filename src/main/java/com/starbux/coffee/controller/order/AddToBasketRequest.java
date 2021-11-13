@@ -15,7 +15,7 @@ import java.util.List;
 public class AddToBasketRequest {
 
     @NotBlank
-    @ApiModelProperty(notes = "The product id of a new order item")
+    @ApiModelProperty(notes = "The product name of a new order item")
     private String productName;
 
     @NotEmpty
