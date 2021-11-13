@@ -13,8 +13,8 @@
 ## Run
 ```
 mvn clean install
-docker build -t starbux-coffee
-docker run -d --name starbux-coffee -p 8080:8080 starbux-coffee
+docker build -t starbux-coffee:latest .
+docker run -d --name starbux-coffee -p 8080:8080 starbux-coffee:latest
 ```
 
 ## Assumptions:
@@ -58,7 +58,7 @@ curl --location --request POST 'localhost:8080/starbux/orders/basket' \
 --header 'Content-Type: application/json' \
 --data-raw '{
     "productName": "Mocha",
-    "toppingNames": ["Lemon", "Milk"]
+    "toppingNames": ["Lemon"]
 }'
 ```
 
